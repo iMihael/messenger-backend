@@ -6,9 +6,9 @@ var MongoClient = require('mongodb').MongoClient,
     clientsCollection;
 
 var db = {
-    initDb: function(success, failure){
-        MongoClient.connect(url, function(err, _db){
-            if(!err) {
+    initDb: function (success, failure) {
+        MongoClient.connect(url, function (err, _db) {
+            if (!err) {
                 con = _db;
                 clientsCollection = con.collection('clients');
                 success();
@@ -17,23 +17,23 @@ var db = {
             }
         });
     },
-    registerClient: function(success, error){
+    registerClient: function (success, error) {
         clientsCollection.insertOne({
             status: 'online'
-        }, function(err, result) {
-            if(!err) {
+        }, function (err, result) {
+            if (!err) {
                 success(result.insertedId);
             } else {
                 error(err);
             }
         });
     },
-    checkLogin: function(uniqueId, success, error) {
-        clientsCollection.find({_id: ObjectId(uniqueId)}).toArray(function(err, result){
-            if(!err) {
-                if(result.length > 0) {
-                    clientsCollection.updateOne({ _id : ObjectId(uniqueId) }, { $set: { status: 'online' } }, function(err) {
-                        if(!err) {
+    checkLogin: function (uniqueId, success, error) {
+        clientsCollection.find({_id: ObjectId(uniqueId)}).toArray(function (err, result) {
+            if (!err) {
+                if (result.length > 0) {
+                    clientsCollection.updateOne({_id: ObjectId(uniqueId)}, {$set: {status: 'online'}}, function (err) {
+                        if (!err) {
                             success();
                         } else {
                             error(err);
@@ -49,21 +49,23 @@ var db = {
         });
     },
     goOffline: function (uniqueId, success, error) {
-        clientsCollection.updateOne({ _id : ObjectId(uniqueId) }, { $set: { status: 'offline' } }, function(err) {
-            if(!err) {
+        clientsCollection.updateOne({_id: ObjectId(uniqueId)}, {$set: {status: 'offline'}}, function (err) {
+            if (!err) {
                 success();
             } else {
                 error(err);
             }
         });
     },
-    getStatuses: function(contacts, success, error) {
-        contacts = contacts.map(function(id) { return ObjectId(id); });
+    getStatuses: function (contacts, success, error) {
+        contacts = contacts.map(function (id) {
+            return ObjectId(id);
+        });
         clientsCollection.find({
-            _id: {$in : contacts}
-        }).toArray(function(err, docs){
-            if(!err) {
-                docs = docs.map(function(doc){
+            _id: {$in: contacts}
+        }).toArray(function (err, docs) {
+            if (!err) {
+                docs = docs.map(function (doc) {
                     doc.id = doc._id.toString();
                     delete doc._id;
                     return doc;
