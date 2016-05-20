@@ -60,7 +60,7 @@ var comm = {
         sock.on('getStatuses', comm.getStatuses);
         sock.on('subscribeToContacts', comm.subscribeToContacts);
         sock.on('subscribeToContact', comm.subscribeToContact);
-        sock.on('getContactIP', comm.getContactIp);
+        sock.on('getContactIP', comm.getContactIP);
         sock.on('sendIPForContact', comm.sendIPForContact);
         sock.on('error', function (err) {
             console.log(err);
@@ -96,7 +96,6 @@ var comm = {
 
     },
     getStatuses: function (contacts) {
-        console.log(contacts);
         var sock = this;
         db.getStatuses(contacts, function (docs) {
             console.log(docs);
@@ -115,10 +114,12 @@ var comm = {
 
         this.subscriptions.push(contact);
     },
-    getContactIp: function (contact) {
+    getContactIP: function (contact) {
+	console.log("getContactIP", contact);
         var contactSocket = comm.getSocketById(contact);
         if (contactSocket) {
-            contactSocket.emit('getContactIp', {
+	    console.log("send data to socket...");
+            contactSocket.emit('getContactIP', {
                 forContact: this.uniqueId
             });
         } else {
@@ -132,16 +133,14 @@ var comm = {
         if (data.hasOwnProperty('forContact')) {
             var contactSocket = comm.getSocketById(data.forContact);
             if (contactSocket) {
-                this.emit('sendIPForContact', {
-                    status: 'success',
-                    data: data
-                });
+		data.status = 'success';
+                this.emit('sendIPForContact', data);
             }
         }
     },
     getSocketById: function (id) {
         for (var i = 0; i < sockets.length; i++) {
-            if (id == sockets.uniqueId) {
+            if (id == sockets[i].uniqueId) {
                 return sockets[i];
             }
         }
