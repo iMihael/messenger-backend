@@ -130,11 +130,12 @@ var comm = {
         }
     },
     sendIPForContact: function (data) {
+	console.log(data);
         if (data.hasOwnProperty('forContact')) {
             var contactSocket = comm.getSocketById(data.forContact);
             if (contactSocket) {
 		data.status = 'success';
-                this.emit('sendIPForContact', data);
+                contactSocket.emit('sendIPForContact', data);
             }
         }
     },
